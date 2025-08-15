@@ -5,6 +5,8 @@ import androidx.room.Room
 import com.example.zobazedailyexpensemanager.core.Constants
 import com.example.zobazedailyexpensemanager.data.local.Database
 import com.example.zobazedailyexpensemanager.data.local.ExpensesDao
+import com.example.zobazedailyexpensemanager.ui.addexpense.repository.AddExpensesRepository
+import com.example.zobazedailyexpensemanager.ui.addexpense.repository.AddExpensesRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,4 +29,8 @@ object AppModule {
 
     @Provides
     fun provideExpensesDao(db: Database): ExpensesDao = db.getExpensesDao()
+
+    @Provides
+    fun provideAddExpensesRepository(addExpensesRepositoryImpl: AddExpensesRepositoryImpl): AddExpensesRepository =
+        addExpensesRepositoryImpl
 }

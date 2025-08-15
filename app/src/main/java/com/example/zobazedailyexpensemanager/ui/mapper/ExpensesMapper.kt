@@ -1,4 +1,4 @@
-package com.example.zobazedailyexpensemanager.ui
+package com.example.zobazedailyexpensemanager.ui.mapper
 
 import com.example.zobazedailyexpensemanager.core.EMPTY
 import com.example.zobazedailyexpensemanager.core.ListMapper

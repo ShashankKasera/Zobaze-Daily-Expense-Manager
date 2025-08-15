@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.zobazedailyexpensemanager.data.local.entity.ExpensesEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ExpensesDao {
@@ -28,4 +29,22 @@ interface ExpensesDao {
 
     @Query("Select * from ExpensesEntity")
     fun loadAllExpenses(): List<ExpensesEntity>
+
+    @Query("SELECT * FROM ExpensesEntity WHERE date = :todayDate")
+    fun getExpensesForToday(todayDate: String): List<ExpensesEntity>
+
+    @Query("SELECT * FROM ExpensesEntity WHERE date BETWEEN :startDate AND :endDate")
+    fun getExpensesBetweenDates(startDate: String, endDate: String): List<ExpensesEntity>
+
+    @Query("SELECT * FROM ExpensesEntity WHERE category = :category")
+    fun getExpensesByCategory(category: String): List<ExpensesEntity>
+
+    @Query("SELECT SUM(amount) FROM ExpensesEntity")
+    fun getTotalExpensesAmount(): Flow<Double>
+
+    @Query("""
+    SELECT * FROM ExpensesEntity 
+    WHERE date >= :startDate
+    ORDER BY date DESC""")
+    fun getExpensesLast7Days(startDate: String): List<ExpensesEntity>
 }

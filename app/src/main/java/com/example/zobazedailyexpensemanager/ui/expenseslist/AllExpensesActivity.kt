@@ -24,9 +24,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.items
-import com.example.zobazedailyexpensemanager.ui.addexpense.AddExpensesViewModel
+import androidx.compose.material3.Button
+import androidx.compose.material3.Switch
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import com.example.zobazedailyexpensemanager.ui.model.Expenses
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
+import android.app.DatePickerDialog
+import android.content.Context
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.platform.LocalContext
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 
 @AndroidEntryPoint
 class AllExpensesActivity : ComponentActivity() {
@@ -39,31 +53,50 @@ class AllExpensesActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                AllExpensesScreen(viewModel)
+//                viewModel.fetchExpensesBetweenDates("2025-08-14", "2025-08-17")
+                viewModel.fetchExpensesByCategory("Food")
+                ExpensesScreen(viewModel)
+
+
             }
         }
     }
 }
 
 @Composable
-fun AllExpensesScreen(viewModel: AllExpensesViewModel) {
-    // Collect expenses list from StateFlow
-    val expenses by viewModel.allExpensesList.collectAsState()
+fun ExpensesScreen(viewModel: AllExpensesViewModel) {
+//    val expenses by viewModel.allExpensesList.collectAsState()
+//    val expenses by viewModel.todayExpenses.collectAsState()
+//    val expenses by viewModel.todayExpenses.collectAsState()
+    val totalAmount by viewModel.totalExpensesAmount.collectAsState()
+
+
+
+    val expenses by viewModel.expensesByCategory.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // Total Amount at the top
         Text(
-            text = "All Expenses",
-            style = MaterialTheme.typography.titleLarge
+            text = "Total Expense : Rs. %.2f".format(totalAmount),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        Text(
+            text = "All Expenses",
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         if (expenses.isEmpty()) {
-            Text("No expenses added yet.")
+            Text("No Expenses till now")
         } else {
             LazyColumn {
                 items(expenses) { expense ->
@@ -74,6 +107,7 @@ fun AllExpensesScreen(viewModel: AllExpensesViewModel) {
         }
     }
 }
+
 
 @Composable
 fun ExpenseItem(expense: Expenses) {

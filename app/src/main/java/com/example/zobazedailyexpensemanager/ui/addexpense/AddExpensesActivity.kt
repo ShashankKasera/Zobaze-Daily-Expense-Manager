@@ -56,10 +56,6 @@ class AddExpensesActivity : ComponentActivity() {
             MaterialTheme {
                 AddExpenseScreen(onSave = { expense ->
                     viewModel.insertExpenses(expense)
-
-                    viewModel.getAllExpenses()
-                    viewModel.allExpensesList
-                    Log.d("AddExpenseScreen", "Expense saved: ${viewModel.allExpensesList}")
                 })
             }
         }

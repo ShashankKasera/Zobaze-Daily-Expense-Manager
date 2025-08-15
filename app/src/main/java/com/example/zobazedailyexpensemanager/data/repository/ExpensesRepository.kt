@@ -1,10 +1,10 @@
-package com.example.zobazedailyexpensemanager.ui.addexpense.repository
+package com.example.zobazedailyexpensemanager.data.repository
 
 import com.example.zobazedailyexpensemanager.data.local.entity.ExpensesEntity
 import com.example.zobazedailyexpensemanager.ui.model.Expenses
 import kotlinx.coroutines.flow.Flow
 
-interface AddExpensesRepository {
+interface ExpensesRepository {
 
     suspend fun insertExpenses(expenses: ExpensesEntity)
 

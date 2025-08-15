@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.zobazedailyexpensemanager.data.local.entity.ExpensesEntity
-import com.example.zobazedailyexpensemanager.ui.addexpense.repository.AddExpensesRepository
+import com.example.zobazedailyexpensemanager.data.repository.ExpensesRepository
 import com.example.zobazedailyexpensemanager.ui.model.Expenses
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddExpensesViewModel @Inject constructor(
-    private val addExpensesRepository: AddExpensesRepository
+    private val expensesRepository: ExpensesRepository
 ) : ViewModel()  {
 
     val allExpensesList = mutableListOf<Expenses>()
@@ -21,16 +21,15 @@ class AddExpensesViewModel @Inject constructor(
     fun insertExpenses(
         expensesEntity:ExpensesEntity
     ) = viewModelScope.launch(Dispatchers.IO)  {
-        addExpensesRepository.insertExpenses( expensesEntity)}
+        expensesRepository.insertExpenses( expensesEntity)}
 
     fun getAllExpenses() {
         viewModelScope.launch {
-            addExpensesRepository.loadAllExpenses().collect {
+            expensesRepository.loadAllExpenses().collect {
                 allExpensesList.clear()
                 allExpensesList.addAll(it)
                 Log.i("rbhj", "getAllExpenses: ${allExpensesList}")
             }
         }
     }
-
 }

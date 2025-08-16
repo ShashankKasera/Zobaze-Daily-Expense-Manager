@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DensitySmall
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -18,7 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.zobazedailyexpensemanager.R
 
 @Composable
 fun BottomActionButton(
@@ -39,14 +41,14 @@ fun BottomActionButton(
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Add Expense") },
+                    text = { Text(stringResource(R.string.add_expense)) },
                     onClick = {
                         expanded = false
                         onAddExpenseClick()
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Expense Report") },
+                    text = { Text(stringResource(R.string.expense_report)) },
                     onClick = {
                         expanded = false
                         onExpenseReportClick()
@@ -55,7 +57,7 @@ fun BottomActionButton(
             }
 
             FloatingActionButton(onClick = { expanded = !expanded }) {
-                Icon(Icons.Default.Add, contentDescription = "Options")
+                Icon(Icons.Default.DensitySmall, contentDescription = stringResource(R.string.options))
             }
         }
     }

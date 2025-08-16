@@ -11,7 +11,7 @@ class ExpensesMapper @Inject constructor() :
     Mapper<ExpensesEntity?, Expenses> {
     override fun map(input: ExpensesEntity?) = Expenses(
         id = input?.id ?: -1,
-        title = input?.title?:String.EMPTY,
+        title = input?.title ?: String.EMPTY,
         amount = input?.amount ?: 0.0,
         category = input?.category ?: String.EMPTY,
         notes = input?.notes ?: String.EMPTY,

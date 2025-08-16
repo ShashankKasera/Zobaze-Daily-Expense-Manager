@@ -4,6 +4,7 @@ import android.icu.text.SimpleDateFormat
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.zobazedailyexpensemanager.R
 import com.example.zobazedailyexpensemanager.data.repository.ExpensesRepository
 import com.example.zobazedailyexpensemanager.ui.model.Expenses
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,10 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AllExpensesViewModel @Inject constructor(
-    private val expensesRepository: ExpensesRepository
+    private val expensesRepository: ExpensesRepository,
 ) : ViewModel() {
-
-    private val masterList = mutableListOf<Expenses>()
 
     private val _allExpensesList = MutableStateFlow<List<Expenses>>(emptyList())
     val allExpensesList: StateFlow<List<Expenses>> = _allExpensesList
@@ -31,7 +30,7 @@ class AllExpensesViewModel @Inject constructor(
     val allExpensesGroupList: StateFlow<Map<String, List<Expenses>>> = _allExpensesGroupList
 
     init {
-        val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val today = SimpleDateFormat("yyyy_MM_dd", Locale.getDefault()).format(Date())
         getTodayTotalExpensesAmount(today)
         fetchTodayExpenses(today)
     }
@@ -40,20 +39,18 @@ class AllExpensesViewModel @Inject constructor(
         viewModelScope.launch {
             expensesRepository.getTodayTotalExpensesAmount(today).collect { amount ->
                 _expensesAmount.value = amount
-                Log.i("AllExpenses", "Fetched: $amount")
             }
         }
     }
 
     fun getTotalExpensesAmountInDateRange(startDate: String, endDate: String) {
         viewModelScope.launch {
-            expensesRepository.getTotalExpensesAmountInDateRange(startDate,endDate).collect { amount ->
-                _expensesAmount.value = amount
-                Log.i("AllExpenses", "Fetched: $amount")
-            }
+            expensesRepository.getTotalExpensesAmountInDateRange(startDate, endDate)
+                .collect { amount ->
+                    _expensesAmount.value = amount
+                }
         }
     }
-
 
     fun fetchExpensesBetweenDates(startDate: String, endDate: String) {
         viewModelScope.launch {
@@ -63,15 +60,6 @@ class AllExpensesViewModel @Inject constructor(
         }
     }
 
-    fun fetchExpensesByCategory(category: String) {
-        viewModelScope.launch {
-            expensesRepository.getExpensesByCategory(category).collect {
-                _allExpensesList.value = it
-            }
-        }
-    }
-
-
     fun fetchTodayExpenses(today: String) {
         viewModelScope.launch {
             expensesRepository.loadExpensesForToday(today).collect {
@@ -79,7 +67,6 @@ class AllExpensesViewModel @Inject constructor(
             }
         }
     }
-
 
     fun groupByCategory() {
         _allExpensesGroupList.value = _allExpensesList.value
@@ -91,5 +78,4 @@ class AllExpensesViewModel @Inject constructor(
         _allExpensesGroupList.value = _allExpensesList.value
             .groupBy { it.date }
     }
-
 }

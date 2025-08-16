@@ -1,3 +1,42 @@
 <resources>
     <string name="app_name">Zobaze Daily Expense Manager</string>
+    <string name="select_time">Select Time</string>
+    <string name="add_expenses">Add Expenses</string>
+    <string name="back">Back</string>
+    <string name="_04d_02d_02d">%04d-%02d-%02d</string>
+    <string name="_02d_02d">%02d:%02d</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="title">Title</string>
+    <string name="amount">Amount</string>
+    <string name="category">Category</string>
+    <string name="optional_notes_max_100_chars">Optional Notes (max 100 chars)</string>
+    <string name="_100">%1$d/100</string>
+    <string name="select_date">Select Date</string>
+    <string name="image">image/*</string>
+    <string name="pick_image">Pick Image</string>
+    <string name="expense_added_successfully">Expense added successfully!</string>
+    <string name="save_expense">Save Expense</string>
+    <string name="expense_report">Expense Report</string>
+    <string name="no_data_available_for_chart">No data available for chart.</string>
+    <string name="yyyy_MM_dd">yyyy-MM-dd</string>
+    <string name="options">Options</string>
+    <string name="group_by_time">Group by Time</string>
+    <string name="group_by_category">Group by Category</string>
+    <string name="sort_expenses_by">Sort Expenses By</string>
+    <string name="previous_dates_via_calendar">Previous dates via calendar</string>
+    <string name="today">Today</string>
+    <string name="saved_image">Saved Image</string>
+    <string name="notes">Notes: %1$s</string>
+    <string name="date">Date: %1$s %2$s</string>
+    <string name="category_">Category: %1$s</string>
+    <string name="no_expenses_found">No Expenses found</string>
+    <string name="all_expenses">All Expenses</string>
+    <string name="total_expense_rs_2f">Total Expense : Rs. %.2f</string>
+    <string name="filter_expenses_by">Filter Expenses By</string>
+
+    <string name="title_cannot_be_empty">Title cannot be empty</string>
+    <string name="amount_cannot_be_empty">Amount cannot be empty</string>
+    <string name="enter_valid_amount">Enter a valid amount greater than 0</string>
+    <string name="please_select_category">Please select a category</string>
+    <string name="yyyy_mm_dd">yyyy-MM-dd</string>
 </resources>

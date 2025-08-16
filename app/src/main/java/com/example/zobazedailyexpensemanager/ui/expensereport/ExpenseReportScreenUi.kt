@@ -1,7 +1,6 @@
 package com.example.zobazedailyexpensemanager.ui.expensereport
 
 import android.graphics.Color.HSVToColor
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -22,9 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.zobazedailyexpensemanager.R
 import com.example.zobazedailyexpensemanager.ui.model.CategoryExpenseReport
 import com.example.zobazedailyexpensemanager.ui.model.DailyExpenseReport
 import me.bytebeats.views.charts.bar.BarChart
@@ -43,12 +44,12 @@ fun ExpenseReportScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Expense Report") },
+                title = { Text(stringResource(R.string.expense_report)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             Icons.Default.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription =stringResource(R.string.back),
                             tint = Color.White
                         )
                     }
@@ -61,7 +62,6 @@ fun ExpenseReportScreen(
             )
         },
         content = { innerPadding ->
-            // Your screen content here
             ExpenseReportMainContent(innerPadding)
         }
     )
@@ -71,26 +71,21 @@ fun ExpenseReportScreen(
 fun ExpenseReportMainContent(innerPadding: PaddingValues) {
     val viewModel: ExpenseReportViewModel = hiltViewModel()
     val dailyTotals = viewModel.dailyExpenseReport.collectAsState().value
-    Log.i("ergbjhsd", "ExpenseReportMainContent: ${dailyTotals}")
     val categoryExpenses = viewModel.categoryExpenseReport.collectAsState().value
-
 
     Column(modifier = Modifier.padding(innerPadding)) {
         DailyTotalBarChart(dailyTotals)
         Spacer(modifier = Modifier.height(16.dp))
         CategoryExpenseBarChart(categoryExpenses)
     }
-
-
 }
-
 
 @Composable
 private fun DailyTotalBarChart(
     dailyTotals: List<DailyExpenseReport>
 ) {
     if (dailyTotals.isEmpty()) {
-        Text("No data available for chart.")
+        Text(stringResource(R.string.no_data_available_for_chart))
         return
     }
 
@@ -118,14 +113,12 @@ private fun DailyTotalBarChart(
             axisLineColor = Color.Gray,
             axisLineThickness = 2.dp
         ),
-
         yAxisDrawer = SimpleYAxisDrawer(
             axisLineColor = Color.Gray,
             axisLineThickness = 2.dp,
             labelTextSize = 14.sp,
             labelTextColor = Color.DarkGray
         ),
-
         labelDrawer = SimpleLabelDrawer(
             drawLocation = SimpleLabelDrawer.DrawLocation.Outside,
             labelTextColor = Color.Black,
@@ -137,7 +130,7 @@ private fun DailyTotalBarChart(
 @Composable
 fun CategoryExpenseBarChart(categoryTotals: List<CategoryExpenseReport>) {
     if (categoryTotals.isEmpty()) {
-        Text("No data available for chart.")
+        Text(stringResource(R.string.no_data_available_for_chart))
         return
     }
 
@@ -160,30 +153,21 @@ fun CategoryExpenseBarChart(categoryTotals: List<CategoryExpenseReport>) {
             .height(300.dp)
             .padding(16.dp),
         animation = simpleChartAnimation(),
-
-        // Rounded colorful bars
         barDrawer = SimpleBarDrawer(),
-
-        // X Axis (category labels)
         xAxisDrawer = SimpleXAxisDrawer(
             axisLineColor = Color.Gray,
             axisLineThickness = 2.dp
         ),
-
-        // Y Axis (amounts)
         yAxisDrawer = SimpleYAxisDrawer(
             axisLineColor = Color.Gray,
             axisLineThickness = 2.dp,
             labelTextSize = 14.sp,
             labelTextColor = Color.DarkGray
         ),
-
-        // Show amounts above each bar
         labelDrawer = SimpleLabelDrawer(
             drawLocation = SimpleLabelDrawer.DrawLocation.Outside,
             labelTextColor = Color.Black,
             labelTextSize = 14.sp
         )
     )
-
 }

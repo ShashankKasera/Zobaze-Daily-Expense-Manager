@@ -47,42 +47,38 @@ interface ExpensesDao {
     @Query("SELECT SUM(amount) FROM ExpensesEntity WHERE date = :todayDate")
     fun getTodayTotalExpensesAmount(todayDate: String): Flow<Double>
 
-
-    @Query("""
-        SELECT date, SUM(amount) as totalAmount
-        FROM ExpensesEntity
-        WHERE date BETWEEN date('now', '-6 days') AND date('now')
-        GROUP BY date
-        ORDER BY date ASC
-    """)
+    @Query(
+        """SELECT date, SUM(amount) as totalAmount
+           FROM ExpensesEntity
+           WHERE date BETWEEN date('now', '-6 days', 'localtime') AND date('now', 'localtime')
+           GROUP BY date
+           ORDER BY date ASC"""
+    )
     fun getLast7DaysExpensesReportDateWise(): List<DailyExpenseReport>
 
-
-    @Query("""
-    SELECT category, SUM(amount) as totalAmount 
-    FROM ExpensesEntity 
-    WHERE date IS NOT NULL 
-    AND date >= date('now', '-6 days') 
-    GROUP BY category
-    ORDER BY totalAmount DESC
-""")
+    @Query(
+        """SELECT category, SUM(amount) as totalAmount 
+           FROM ExpensesEntity 
+           WHERE date IS NOT NULL 
+           AND date >= date('now', '-6 days') 
+           GROUP BY category
+           ORDER BY totalAmount DESC"""
+    )
     fun getLast7DaysExpensesReportCategoryWise(): List<CategoryExpenseReport>
 
     @Query(
-        """
-    SELECT * FROM ExpensesEntity 
-    WHERE date >= :startDate
-    ORDER BY date DESC"""
+        """SELECT * FROM ExpensesEntity 
+           WHERE date >= :startDate
+           ORDER BY date DESC"""
     )
     fun getExpensesLast7Days(startDate: String): List<ExpensesEntity>
 
 
-
-    @Query("""
-    SELECT * FROM ExpensesEntity 
-    WHERE category IS NOT NULL 
-    GROUP BY category
-""")
+    @Query(
+        """SELECT * FROM ExpensesEntity 
+           WHERE category IS NOT NULL 
+           GROUP BY category"""
+    )
     fun getOneExpensePerCategory(): List<ExpensesEntity>
 
     @Query("SELECT SUM(amount) FROM ExpensesEntity WHERE date BETWEEN :startDate AND :endDate")

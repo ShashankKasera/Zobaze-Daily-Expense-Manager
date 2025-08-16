@@ -1,10 +1,7 @@
 package com.example.zobazedailyexpensemanager.ui.expenseslist
 
 import android.app.DatePickerDialog
-import android.content.Intent
 import android.icu.text.SimpleDateFormat
-import android.net.Uri
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Sort
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +33,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,28 +43,33 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.compose.AsyncImage
+import com.example.zobazedailyexpensemanager.R
 import com.example.zobazedailyexpensemanager.ui.model.Expenses
 import com.example.zobazedailyexpensemanager.ui.navigation.Route
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AllExpensesScreen(
+
     navigate: (String) -> Unit,
 ) {
-
+    val context= LocalContext.current
     val viewModel: AllExpensesViewModel = hiltViewModel()
     val totalAmount by viewModel.expensesAmount.collectAsState()
     val expenses by viewModel.allExpensesList.collectAsState()
     val allExpensesGroupList by viewModel.allExpensesGroupList.collectAsState()
-
     val coroutineScope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     var group by remember { mutableStateOf(false) }
@@ -75,11 +77,24 @@ fun AllExpensesScreen(
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
-
     var isStartPickerVisible by remember { mutableStateOf(false) }
     var isEndPickerVisible by remember { mutableStateOf(false) }
     var startDate by remember { mutableStateOf("") }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val today = SimpleDateFormat(context.getString(R.string.yyyy_mm_dd), Locale.getDefault()).format(Date())
+                viewModel.getTodayTotalExpensesAmount(today)
+                viewModel.fetchTodayExpenses(today)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
 
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     DatePiker(isStartPickerVisible, {
         startDate = it
@@ -108,7 +123,7 @@ fun AllExpensesScreen(
             when (it) {
                 "Today" -> {
                     group = false
-                    val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                    val today = SimpleDateFormat(context.getString(R.string.yyyy_mm_dd), Locale.getDefault()).format(Date())
                     viewModel.fetchTodayExpenses(today)
                     viewModel.getTodayTotalExpensesAmount(today)
                 }
@@ -121,7 +136,7 @@ fun AllExpensesScreen(
 
                 else -> {
                     group = false
-                    val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                    val today = SimpleDateFormat(context.getString(R.string.yyyy_mm_dd), Locale.getDefault()).format(Date())
                     viewModel.fetchTodayExpenses(today)
                     viewModel.getTodayTotalExpensesAmount(today)
                 }
@@ -197,71 +212,7 @@ fun AllExpensesScreen(
 }
 
 @Composable
-fun DateRangePickerButton() {
-    val context = LocalContext.current
-    val calendar = Calendar.getInstance()
-
-    // State for selected dates
-    var startDate by remember { mutableStateOf("") }
-    var endDate by remember { mutableStateOf("") }
-
-    // Flags to track which picker is open
-    var isStartPickerVisible by remember { mutableStateOf(false) }
-    var isEndPickerVisible by remember { mutableStateOf(false) }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-
-        // Start Date Picker
-        Button(onClick = { isStartPickerVisible = true }) {
-            Text(text = if (startDate.isEmpty()) "Select Start Date" else "Start: $startDate")
-        }
-
-        // End Date Picker
-        Button(onClick = { isEndPickerVisible = true }) {
-            Text(text = if (endDate.isEmpty()) "Select End Date" else "End: $endDate")
-        }
-
-        // Show Date Picker Dialog for Start Date
-        if (isStartPickerVisible) {
-            DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    startDate = "%04d-%02d-%02d".format(year, month + 1, dayOfMonth)
-                    isStartPickerVisible = false
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
-
-        // Show Date Picker Dialog for End Date
-        if (isEndPickerVisible) {
-            DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    endDate = "%04d-%02d-%02d".format(year, month + 1, dayOfMonth)
-                    isEndPickerVisible = false
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Use the selected range
-        if (startDate.isNotEmpty() && endDate.isNotEmpty()) {
-            Text("Selected range:\n$startDate to $endDate")
-        }
-    }
-}
-
-
-@Composable
 fun GroupedExpensesScreen(map: Map<String, List<Expenses>>) {
-
     Column {
         LazyColumn {
             map.forEach { (category, expenses) ->
@@ -278,9 +229,7 @@ fun GroupedExpensesScreen(map: Map<String, List<Expenses>>) {
             }
         }
     }
-
 }
-
 
 @Composable
 fun AllExpensesMainContent(
@@ -302,9 +251,8 @@ fun AllExpensesMainContent(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Total Amount at the top
             Text(
-                text = "Total Expense : Rs. %.2f".format(totalAmount),
+                text = stringResource(R.string.total_expense_rs_2f).format(totalAmount),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -312,7 +260,7 @@ fun AllExpensesMainContent(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "All Expenses",
+                text = stringResource(R.string.all_expenses),
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -320,17 +268,24 @@ fun AllExpensesMainContent(
 
             if (group) {
                 if (allExpensesGroupList.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxWidth().weight(1f)){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
                         Text("No Expenses found")
                     }
-                }
-                else{
+                } else {
                     GroupedExpensesScreen(map = allExpensesGroupList)
                 }
             } else {
                 if (expenses.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxWidth().weight(1f)){
-                        Text("No Expenses found")
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        Text(stringResource(R.string.no_expenses_found))
                     }
                 } else {
                     LazyColumn {
@@ -381,15 +336,15 @@ fun ExpenseItem(expense: Expenses) {
             Spacer(modifier = Modifier.height(6.dp))
 
             Row {
-                Column (modifier = Modifier.weight(1f)){
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Category: ${expense.category ?: "N/A"}",
+                        text = stringResource(R.string.category_, expense.category ?: "N/A"),
                         style = MaterialTheme.typography.bodySmall
                     )
 
                     if (!expense.notes.isNullOrEmpty()) {
                         Text(
-                            text = "Notes: ${expense.notes}",
+                            text = stringResource(R.string.notes, expense.notes),
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -397,7 +352,11 @@ fun ExpenseItem(expense: Expenses) {
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = "Date: ${expense.date ?: "-"} ${expense.time ?: ""}",
+                        text = stringResource(
+                            R.string.date,
+                            expense.date ?: "-",
+                            expense.time ?: ""
+                        ),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -405,8 +364,10 @@ fun ExpenseItem(expense: Expenses) {
                 }
                 AsyncImage(
                     model = expense.receipt.toUri(),
-                    contentDescription = "Saved Image",
-                    modifier = Modifier.size(60.dp).padding(8.dp)
+                    contentDescription = stringResource(R.string.saved_image),
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(8.dp)
                 )
             }
         }
@@ -431,13 +392,11 @@ fun ExpenseScreenWithFilterAndSort(
         ) {
             when (activeSheet) {
                 BottomSheetType.FILTER -> FilterSheetContent { selected ->
-                    // Handle filter option
                     println("Filter selected: $selected")
                     onFilterClick(selected)
                 }
 
                 BottomSheetType.SORT -> SortSheetContent { selected ->
-                    // Handle sort option
                     println("Sort selected: $selected")
                     onSorClick(selected)
                 }
@@ -453,20 +412,23 @@ enum class BottomSheetType {
 @Composable
 fun FilterSheetContent(onOptionSelected: (String) -> Unit) {
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Filter Expenses By", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.filter_expenses_by), style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(12.dp))
-        FilterOption("Today", onOptionSelected)
-        FilterOption("Previous dates via calendar", onOptionSelected)
+        FilterOption(stringResource(R.string.today), onOptionSelected)
+        FilterOption(stringResource(R.string.previous_dates_via_calendar), onOptionSelected)
     }
 }
 
 @Composable
 fun SortSheetContent(onOptionSelected: (String) -> Unit) {
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Sort Expenses By", style = MaterialTheme.typography.titleMedium)
+        Text(
+            stringResource(R.string.sort_expenses_by),
+            style = MaterialTheme.typography.titleMedium
+        )
         Spacer(Modifier.height(12.dp))
-        FilterOption("Group by Category", onOptionSelected)
-        FilterOption("Group by Time", onOptionSelected)
+        FilterOption(stringResource(R.string.group_by_category), onOptionSelected)
+        FilterOption(stringResource(R.string.group_by_time), onOptionSelected)
     }
 }
 
@@ -492,7 +454,7 @@ fun DatePiker(
         DatePickerDialog(
             context,
             { _, year, month, dayOfMonth ->
-                onDatePicked("%04d-%02d-%02d".format(year, month + 1, dayOfMonth))
+                onDatePicked(context.getString(R.string._04d_02d_02d).format(year, month + 1, dayOfMonth))
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),

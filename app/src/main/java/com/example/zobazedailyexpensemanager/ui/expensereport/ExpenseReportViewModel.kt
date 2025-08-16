@@ -18,7 +18,6 @@ class ExpenseReportViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-
     private val _DailyExpenseReport = MutableStateFlow<List<DailyExpenseReport>>(emptyList())
     val dailyExpenseReport: StateFlow<List<DailyExpenseReport>> = _DailyExpenseReport
 
@@ -31,12 +30,10 @@ class ExpenseReportViewModel @Inject constructor(
     }
 
 
-
     private fun getLast7DaysExpensesReportDateWise() {
         viewModelScope.launch {
             expensesRepository.getLast7DaysExpensesReportDateWise().collect { it ->
                 _DailyExpenseReport.value = it
-                Log.i("AllExpenses", "Fetched: $it")
             }
         }
     }
@@ -45,7 +42,6 @@ class ExpenseReportViewModel @Inject constructor(
         viewModelScope.launch {
             expensesRepository.getLast7DaysExpensesReportCategoryWise().collect { it ->
                 _CategoryExpenseReport.value = it
-                Log.i("AllExpenses", "getLast7DaysExpensesReportCategoryWise: $it")
             }
         }
     }

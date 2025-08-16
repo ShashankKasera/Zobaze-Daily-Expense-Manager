@@ -26,7 +26,6 @@ class ExpenseReportViewModel @Inject constructor(
     val categoryExpenseReport: StateFlow<List<CategoryExpenseReport>> = _CategoryExpenseReport
 
     init {
-
         getLast7DaysExpensesReportDateWise()
         getLast7DaysExpensesReportCategoryWise()
     }

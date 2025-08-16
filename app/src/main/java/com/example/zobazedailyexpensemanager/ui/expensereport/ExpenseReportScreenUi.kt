@@ -1,6 +1,7 @@
 package com.example.zobazedailyexpensemanager.ui.expensereport
 
 import android.graphics.Color.HSVToColor
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -70,6 +71,7 @@ fun ExpenseReportScreen(
 fun ExpenseReportMainContent(innerPadding: PaddingValues) {
     val viewModel: ExpenseReportViewModel = hiltViewModel()
     val dailyTotals = viewModel.dailyExpenseReport.collectAsState().value
+    Log.i("ergbjhsd", "ExpenseReportMainContent: ${dailyTotals}")
     val categoryExpenses = viewModel.categoryExpenseReport.collectAsState().value
 
 
@@ -81,8 +83,6 @@ fun ExpenseReportMainContent(innerPadding: PaddingValues) {
 
 
 }
-
-
 
 
 @Composable
@@ -129,7 +129,7 @@ private fun DailyTotalBarChart(
         labelDrawer = SimpleLabelDrawer(
             drawLocation = SimpleLabelDrawer.DrawLocation.Outside,
             labelTextColor = Color.Black,
-            labelTextSize = 14.sp
+            labelTextSize = 10.sp
         )
     )
 }

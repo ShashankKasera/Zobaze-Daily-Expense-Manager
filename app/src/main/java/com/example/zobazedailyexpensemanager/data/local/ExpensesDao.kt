@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.zobazedailyexpensemanager.data.local.entity.ExpensesEntity
 import com.example.zobazedailyexpensemanager.ui.model.CategoryExpenseReport
+import com.example.zobazedailyexpensemanager.ui.model.DailyExpenseReport
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -47,15 +48,14 @@ interface ExpensesDao {
     fun getTodayTotalExpensesAmount(todayDate: String): Flow<Double>
 
 
-    @Query(
-        """
-    SELECT * FROM ExpensesEntity 
-    WHERE date IS NOT NULL 
-    AND date >= date('now', '-6 days')
-    ORDER BY date ASC
-"""
-    )
-    fun getLast7DaysExpensesReportDateWise(): List<ExpensesEntity>
+    @Query("""
+        SELECT date, SUM(amount) as totalAmount
+        FROM ExpensesEntity
+        WHERE date BETWEEN date('now', '-6 days') AND date('now')
+        GROUP BY date
+        ORDER BY date ASC
+    """)
+    fun getLast7DaysExpensesReportDateWise(): List<DailyExpenseReport>
 
 
     @Query("""

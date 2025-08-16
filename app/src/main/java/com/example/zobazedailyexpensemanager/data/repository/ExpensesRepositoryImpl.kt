@@ -56,7 +56,8 @@ class ExpensesRepositoryImpl @Inject constructor(
         (expensesDao.getTotalExpensesBetweenDates(startDate,endDate)).flowOn(Dispatchers.IO)
 
     override suspend fun getLast7DaysExpensesReportDateWise(): Flow<List<DailyExpenseReport>> = flow {
-        emit(dailyExpenseReportListMapper.map(expensesDao.getLast7DaysExpensesReportDateWise()))
+        emit(expensesDao.getLast7DaysExpensesReportDateWise())
+        Log.i("eghbj", "getLast7DaysExpensesReportCategoryWise: ${expensesDao.getLast7DaysExpensesReportCategoryWise()}")
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getLast7DaysExpensesReportCategoryWise(): Flow<List<CategoryExpenseReport>> = flow {

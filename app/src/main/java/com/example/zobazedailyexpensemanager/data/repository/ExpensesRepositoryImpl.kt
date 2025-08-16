@@ -1,8 +1,13 @@
 package com.example.zobazedailyexpensemanager.data.repository
 
+import android.util.Log
 import com.example.zobazedailyexpensemanager.data.local.ExpensesDao
 import com.example.zobazedailyexpensemanager.data.local.entity.ExpensesEntity
+import com.example.zobazedailyexpensemanager.ui.mapper.CategoryExpenseReportListMapper
+import com.example.zobazedailyexpensemanager.ui.mapper.DailyExpenseReportListMapper
 import com.example.zobazedailyexpensemanager.ui.mapper.ExpensesListMapper
+import com.example.zobazedailyexpensemanager.ui.model.CategoryExpenseReport
+import com.example.zobazedailyexpensemanager.ui.model.DailyExpenseReport
 import com.example.zobazedailyexpensemanager.ui.model.Expenses
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -14,6 +19,8 @@ import javax.inject.Inject
 class ExpensesRepositoryImpl @Inject constructor(
     private val expensesDao: ExpensesDao,
     private val expensesListMapper: ExpensesListMapper,
+    private val dailyExpenseReportListMapper: DailyExpenseReportListMapper,
+    private val categoryExpenseReportListMapper: CategoryExpenseReportListMapper,
 ) : ExpensesRepository {
 
     override suspend fun insertExpenses(expenses: ExpensesEntity) = withContext(Dispatchers.IO) {
@@ -42,10 +49,27 @@ class ExpensesRepositoryImpl @Inject constructor(
     override suspend fun getTotalExpensesAmount(): Flow<Double> =
         (expensesDao.getTotalExpensesAmount()).flowOn(Dispatchers.IO)
 
+    override suspend fun getTodayTotalExpensesAmount(today: String): Flow<Double> =
+        (expensesDao.getTodayTotalExpensesAmount(today)).flowOn(Dispatchers.IO)
 
-    override fun getExpensesLast7Days(startDate: String): Flow<List<Expenses>> = flow {
-        emit(expensesListMapper.map(expensesDao.getExpensesLast7Days(startDate)))
+    override suspend fun getTotalExpensesAmountInDateRange(startDate: String,endDate:String): Flow<Double>  =
+        (expensesDao.getTotalExpensesBetweenDates(startDate,endDate)).flowOn(Dispatchers.IO)
+
+    override suspend fun getLast7DaysExpensesReportDateWise(): Flow<List<DailyExpenseReport>> = flow {
+        emit(dailyExpenseReportListMapper.map(expensesDao.getLast7DaysExpensesReportDateWise()))
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun getLast7DaysExpensesReportCategoryWise(): Flow<List<CategoryExpenseReport>> = flow {
+        Log.i("rkjnd", "getLast7DaysExpensesReportCategoryWise: ${expensesDao.getLast7DaysExpensesReportCategoryWise()}")
+        emit(expensesDao.getLast7DaysExpensesReportCategoryWise())
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getOneExpensePerCategory(): Flow<List<Expenses>> = flow {
+        emit(expensesListMapper.map(expensesDao.getOneExpensePerCategory()))
+    }
+
+
+
 
 
 }

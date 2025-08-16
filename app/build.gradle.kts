@@ -43,6 +43,7 @@ android {
     }
 }
 
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -75,6 +76,7 @@ dependencies {
     //dagger hilt
     implementation(libs.hilt.android.v2562)
     ksp(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     //ktx
     implementation(libs.androidx.activity.ktx)
@@ -86,5 +88,19 @@ dependencies {
     //coroutines
     implementation(libs.kotlinx.coroutines.android)
 
+    implementation(libs.androidx.ui.v167)
+//    implementation(project(":charts"))
+    implementation("io.github.bytebeats:compose-charts:0.2.1")
+    implementation(libs.core)
 
+    implementation(libs.ui)
+    implementation(libs.material3)
+
+    implementation("androidx.navigation:navigation-compose:2.9.3")
+
+    implementation("androidx.compose.material:material-icons-extended")
+
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
+    implementation("com.patrykandpatrick.vico:compose-m3:2.0.0") // Material3 Compose support
 }

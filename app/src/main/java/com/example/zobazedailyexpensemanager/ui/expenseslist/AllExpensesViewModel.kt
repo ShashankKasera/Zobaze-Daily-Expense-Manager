@@ -24,75 +24,72 @@ class AllExpensesViewModel @Inject constructor(
     private val _allExpensesList = MutableStateFlow<List<Expenses>>(emptyList())
     val allExpensesList: StateFlow<List<Expenses>> = _allExpensesList
 
-    private val _todayExpenses = MutableStateFlow<List<Expenses>>(emptyList())
-    val todayExpenses: StateFlow<List<Expenses>> = _todayExpenses
+    private val _expensesAmount = MutableStateFlow<Double>(0.0)
+    val expensesAmount: StateFlow<Double> = _expensesAmount
 
-
-    private val _expensesInRange = MutableStateFlow<List<Expenses>>(emptyList())
-    val expensesInRange: StateFlow<List<Expenses>> = _expensesInRange
-
-    private val _expensesByCategory = MutableStateFlow<List<Expenses>>(emptyList())
-    val expensesByCategory: StateFlow<List<Expenses>> = _expensesByCategory
-
-    private val _TotalExpensesAmount = MutableStateFlow<Double>(0.0)
-    val totalExpensesAmount: StateFlow<Double> = _TotalExpensesAmount
-
-
+    private val _allExpensesGroupList = MutableStateFlow<Map<String, List<Expenses>>>(emptyMap())
+    val allExpensesGroupList: StateFlow<Map<String, List<Expenses>>> = _allExpensesGroupList
 
     init {
-        getAllExpenses()
-        fetchTodayExpenses()
-        getTotalExpensesAmount()
-
-    }
-
-
-    fun fetchExpensesBetweenDates(startDate: String, endDate: String) {
-        viewModelScope.launch {
-            expensesRepository.loadExpensesBetweenDates(startDate, endDate).collect {
-                _expensesInRange.value = it
-            }
-        }
-    }
-
-
-
-    fun fetchExpensesByCategory(category: String) {
-        viewModelScope.launch {
-            expensesRepository.getExpensesByCategory(category).collect {
-                _expensesByCategory.value = it
-            }
-        }
-    }
-    fun fetchTodayExpenses() {
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        viewModelScope.launch {
-            expensesRepository.loadExpensesForToday(today).collect {
-                _todayExpenses.value = it
-            }
-        }
+        getTodayTotalExpensesAmount(today)
+        fetchTodayExpenses(today)
     }
-    fun getAllExpenses() {
+
+    fun getTodayTotalExpensesAmount(today: String) {
         viewModelScope.launch {
-            expensesRepository.loadAllExpenses().collect { list ->
-                masterList.clear()
-                masterList.addAll(list)
-                _allExpensesList.value = list
-                Log.i("AllExpenses", "Fetched: $list")
+            expensesRepository.getTodayTotalExpensesAmount(today).collect { amount ->
+                _expensesAmount.value = amount
+                Log.i("AllExpenses", "Fetched: $amount")
             }
         }
     }
 
-    private fun getTotalExpensesAmount() {
+    fun getTotalExpensesAmountInDateRange(startDate: String, endDate: String) {
         viewModelScope.launch {
-            expensesRepository.getTotalExpensesAmount().collect { amount ->
-                _TotalExpensesAmount.value = amount
+            expensesRepository.getTotalExpensesAmountInDateRange(startDate,endDate).collect { amount ->
+                _expensesAmount.value = amount
                 Log.i("AllExpenses", "Fetched: $amount")
             }
         }
     }
 
 
+    fun fetchExpensesBetweenDates(startDate: String, endDate: String) {
+        viewModelScope.launch {
+            expensesRepository.loadExpensesBetweenDates(startDate, endDate).collect {
+                _allExpensesList.value = it
+            }
+        }
+    }
 
+    fun fetchExpensesByCategory(category: String) {
+        viewModelScope.launch {
+            expensesRepository.getExpensesByCategory(category).collect {
+                _allExpensesList.value = it
+            }
+        }
+    }
+
+
+    fun fetchTodayExpenses(today: String) {
+        viewModelScope.launch {
+            expensesRepository.loadExpensesForToday(today).collect {
+                _allExpensesList.value = it
+            }
+        }
+    }
+
+
+    fun groupByCategory() {
+        _allExpensesGroupList.value = _allExpensesList.value
+            .groupBy { it.category }
+
+    }
+
+    fun getExpensesGroupedByTime() {
+        _allExpensesGroupList.value = _allExpensesList.value
+            .groupBy { it.date }
+    }
 
 }

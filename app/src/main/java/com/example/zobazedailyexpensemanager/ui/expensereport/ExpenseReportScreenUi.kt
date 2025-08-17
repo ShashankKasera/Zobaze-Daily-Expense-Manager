@@ -50,7 +50,7 @@ fun ExpenseReportScreen(
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription =stringResource(R.string.back),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 },
@@ -117,11 +117,11 @@ private fun DailyTotalBarChart(
             axisLineColor = Color.Gray,
             axisLineThickness = 2.dp,
             labelTextSize = 14.sp,
-            labelTextColor = Color.DarkGray
+            labelTextColor = MaterialTheme.colorScheme.onSurface
         ),
         labelDrawer = SimpleLabelDrawer(
             drawLocation = SimpleLabelDrawer.DrawLocation.Outside,
-            labelTextColor = Color.Black,
+            labelTextColor = MaterialTheme.colorScheme.onSurface,
             labelTextSize = 10.sp
         )
     )
@@ -162,11 +162,11 @@ fun CategoryExpenseBarChart(categoryTotals: List<CategoryExpenseReport>) {
             axisLineColor = Color.Gray,
             axisLineThickness = 2.dp,
             labelTextSize = 14.sp,
-            labelTextColor = Color.DarkGray
+            labelTextColor = MaterialTheme.colorScheme.onSurface
         ),
         labelDrawer = SimpleLabelDrawer(
             drawLocation = SimpleLabelDrawer.DrawLocation.Outside,
-            labelTextColor = Color.Black,
+            labelTextColor = MaterialTheme.colorScheme.onSurface,
             labelTextSize = 14.sp
         )
     )
